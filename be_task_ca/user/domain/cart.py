@@ -1,51 +1,43 @@
-from dataclasses import dataclass
-from typing import List, Optional
-from uuid import UUID, uuid4
+from dataclasses import dataclass, field
+from typing import List
+from uuid import uuid4
 
 
 @dataclass
 class CartItem:
-    """Represents an item in the shopping cart."""
-    item_id: UUID
+    """A value object representing an item in a cart."""
+    item_id: str
     quantity: int
+    id: str = field(default_factory=lambda: str(uuid4()))
 
 
 @dataclass
 class Cart:
-    """Cart entity representing a user's shopping cart."""
-    id: UUID
-    user_id: UUID
-    items: List[CartItem]
+    """A domain entity representing a user's shopping cart."""
+    user_id: str
+    id: str = field(default_factory=lambda: str(uuid4()))
+    items: List[CartItem] = field(default_factory=list)
 
-    @classmethod
-    def create_new(cls, user_id: UUID) -> "Cart":
-        """Factory method to create a new cart."""
-        return cls(
-            id=uuid4(),
-            user_id=user_id,
-            items=[],
-        )
-
-    def add_item(self, item_id: UUID, quantity: int) -> None:
+    def add_item(self, item_id: str, quantity: int) -> None:
         """Add an item to the cart."""
-        # Check if item already exists in cart
-        for cart_item in self.items:
-            if cart_item.item_id == item_id:
-                cart_item.quantity += quantity
+        # Check if item already exists
+        for item in self.items:
+            if item.item_id == item_id:
+                item.quantity += quantity
                 return
-
-        # Add new item to cart
+        
+        # Add new item
         self.items.append(CartItem(item_id=item_id, quantity=quantity))
 
-    def remove_item(self, item_id: UUID) -> None:
+    def remove_item(self, item_id: str) -> None:
         """Remove an item from the cart."""
         self.items = [item for item in self.items if item.item_id != item_id]
 
-    def update_item_quantity(self, item_id: UUID, quantity: int) -> None:
+    def update_item_quantity(self, item_id: str, quantity: int) -> None:
         """Update the quantity of an item in the cart."""
-        for cart_item in self.items:
-            if cart_item.item_id == item_id:
-                cart_item.quantity = quantity
+        for item in self.items:
+            if item.item_id == item_id:
+                item.quantity = quantity
                 return
         raise ValueError(f"Item {item_id} not found in cart")
 

@@ -5,13 +5,14 @@ from uuid import UUID, uuid4
 
 @dataclass
 class User:
-    """Core User entity representing a user in the system."""
+    """User entity representing a customer in the system."""
+    
     id: UUID
     email: str
     first_name: str
     last_name: str
     hashed_password: str
-    shipping_address: Optional[str]
+    shipping_address: Optional[str] = None
 
     @classmethod
     def create_new(
@@ -22,7 +23,7 @@ class User:
         hashed_password: str,
         shipping_address: Optional[str] = None,
     ) -> "User":
-        """Factory method to create a new user."""
+        """Create a new user with a generated UUID."""
         return cls(
             id=uuid4(),
             email=email,

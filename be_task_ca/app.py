@@ -1,10 +1,7 @@
 from fastapi import FastAPI, Request, Response
 from .user.api import user_router
 from .item.api import item_router
-from be_task_ca.user import model
-
-from .database import SessionLocal, engine
-
+from .database import get_db, Session
 
 app = FastAPI()
 app.include_router(user_router)
@@ -15,7 +12,7 @@ app.include_router(item_router)
 async def db_session_middleware(request: Request, call_next):
     response = Response("Internal server error", status_code=500)
     try:
-        request.state.db = SessionLocal()
+        request.state.db = next(get_db())
         response = await call_next(request)
     finally:
         request.state.db.close()

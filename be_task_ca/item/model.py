@@ -1,19 +1,23 @@
 from dataclasses import dataclass
 from uuid import UUID, uuid4
-from sqlalchemy.orm import Mapped, mapped_column
-from be_task_ca.database import Base
 
 
 @dataclass
-class Item(Base):
-    __tablename__ = "items"
+class Item:
+    """Domain model for items."""
+    id: UUID
+    name: str
+    description: str
+    price: float
+    quantity: int
 
-    id: Mapped[UUID] = mapped_column(
-        primary_key=True,
-        default=uuid4(),
-        index=True,
-    )
-    name: Mapped[str] = mapped_column(unique=True, index=True)
-    description: Mapped[str]
-    price: Mapped[float]
-    quantity: Mapped[int]
+    @classmethod
+    def create_new(cls, name: str, description: str, price: float, quantity: int) -> "Item":
+        """Create a new item with a generated UUID."""
+        return cls(
+            id=uuid4(),
+            name=name,
+            description=description,
+            price=price,
+            quantity=quantity,
+        )

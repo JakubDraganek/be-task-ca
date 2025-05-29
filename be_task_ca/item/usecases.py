@@ -1,11 +1,10 @@
 from typing import List
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from .repository import find_item_by_name, get_all_items, save_item
-
 from .model import Item
 from .schema import AllItemsRepsonse, CreateItemRequest, CreateItemResponse
-from sqlalchemy.orm import Session
 
 
 def create_item(item: CreateItemRequest, db: Session) -> CreateItemResponse:
@@ -15,7 +14,7 @@ def create_item(item: CreateItemRequest, db: Session) -> CreateItemResponse:
             status_code=409, detail="An item with this name already exists"
         )
 
-    new_item = Item(
+    new_item = Item.create_new(
         name=item.name,
         description=item.description,
         price=item.price,
@@ -33,7 +32,7 @@ def get_all(db: Session) -> List[CreateItemResponse]:
 
 def model_to_schema(item: Item) -> CreateItemResponse:
     return CreateItemResponse(
-        id=item.id,
+        id=str(item.id),  # Convert UUID to string for API response
         name=item.name,
         description=item.description,
         price=item.price,
